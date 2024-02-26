@@ -4,10 +4,10 @@
  * GLASSIFY ADDONS
  */
 
-//#define GLAS_STORAGE
-//#define GLAS_SERIALIZATION_BINARY
+#define GLAS_STORAGE
+#define GLAS_SERIALIZATION_BINARY
 //#define GLAS_SERIALIZATION_JSON
-//#define GLAS_SERIALIZATION_YAML
+#define GLAS_SERIALIZATION_YAML
 
 #include <span>
 #include <array>
@@ -29,7 +29,7 @@
 #endif
 
 #ifdef GLAS_SERIALIZATION_YAML
-#include "serialization/YAML3rdParty/yaml.h"
+#include <yaml-cpp/yaml.h>
 #endif
 
 

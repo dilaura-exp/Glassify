@@ -64,31 +64,45 @@ namespace glas::Serialization
 		YAML::Node node; 
 
 		auto& info = type.GetInfo();
-		for (auto& member : info.Members)
-		{
-			if (!member.Variable.IsRefOrPointer() && member.Variable.GetTypeId().IsValid())
-			{
+		SerializeYAMLBaseRecursive(node, data, info);
+		return node;
+	}
+
+	inline void SerializeYAMLBaseRecursive(YAML::Node& node, const void* data, const glas::TypeInfo& info) {
+		for (auto& baseClass : info.BaseClasses) {
+			auto& baseInfo = GetTypeInfo(baseClass.BaseId);
+			SerializeYAMLBaseRecursive(node, data, baseInfo);
+		}
+
+		for (auto& member : info.Members) {
+			if (member.Name.empty()) continue;
+			if (!member.Variable.IsRefOrPointer() && member.Variable.GetTypeId().IsValid()) {
 				auto& memberInfo = member.Variable.GetTypeId().GetInfo();
 
 				node[member.Name] = memberInfo.YamlSerializer(VoidOffset(data, member.Offset));
 			}
 		}
-
-		return node;
 	}
 
 	inline bool DeserializeYamlDefault(const YAML::Node& node, void* data, glas::TypeId type)
 	{
 		auto& info = type.GetInfo();
+		DeserializeYamlBaseRecursive(node, data, info);
+		return true;
+	}
 
-		for (auto& member : info.Members)
-		{
-			if (!member.Variable.IsRefOrPointer() && member.Variable.GetTypeId().IsValid())
-			{
+	inline bool DeserializeYamlBaseRecursive(const YAML::Node& node, void* data, const glas::TypeInfo& info) {
+		for (auto& baseClass : info.BaseClasses) {
+			auto& baseInfo = GetTypeInfo(baseClass.BaseId);
+			if (!DeserializeYamlBaseRecursive(node, data, baseInfo))
+				return false;
+		}
+
+		for (auto& member : info.Members) {
+			if (!member.Variable.IsRefOrPointer() && member.Variable.GetTypeId().IsValid()) {
 				auto& memberInfo = member.Variable.GetTypeId().GetInfo();
 
-				if (auto varNode = node[member.Name])
-				{
+				if (auto varNode = node[member.Name]) {
 					memberInfo.YamlDeserializer(varNode, VoidOffset(data, member.Offset));
 				}
 			}

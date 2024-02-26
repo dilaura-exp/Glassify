@@ -279,7 +279,12 @@ namespace glas
 		info.Properties		= properties;
 
 		auto& memberInfo = const_cast<TypeInfo&>(RegisterType<Class>());
-
+		for (auto& existingInfo : memberInfo.Members) {
+			if (existingInfo.Name == info.Name) {
+				existingInfo = std::move(info);
+				return existingInfo;
+			}
+		}
 		return *memberInfo.Members.emplace(std::upper_bound(memberInfo.Members.begin(), memberInfo.Members.end(), info), std::move(info));
 	}
 

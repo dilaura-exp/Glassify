@@ -12,8 +12,7 @@
 #include "../storage/glas_storage_config.h"
 #endif
 
-//#include "YAML3rdParty/yaml.h"
-#include "YAML3rdParty/yaml.h"
+#include "yaml-cpp/yaml.h"
 
 namespace glas
 {
@@ -43,7 +42,9 @@ namespace glas::Serialization
 	void DeserializeYaml(std::istream& stream, T& value);
 
 	inline YAML::Node SerializeYamlDefault(const void* data, glas::TypeId type);
+	inline void SerializeYAMLBaseRecursive(YAML::Node& node, const void* data, const glas::TypeInfo& info);
 	inline bool DeserializeYamlDefault(const YAML::Node& node, void* data, glas::TypeId type);
+	inline bool DeserializeYamlBaseRecursive(const YAML::Node& node, void* data, const glas::TypeInfo& info);
 }
 
 namespace YAML
