@@ -133,6 +133,7 @@ namespace glas::Storage
 			m_Data = std::make_unique<uint8_t[]>(info.Size);
 			copyConstructor(m_Data.get(), other.m_Data.get());
 		}
+		return *this;
 	}
 
 	inline TypeStorage& TypeStorage::operator=(TypeStorage&& other) noexcept
